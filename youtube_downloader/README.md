@@ -9,7 +9,8 @@ how others use the `youtube-dl` software.
 
 ## Setting up youtube-dl
 
-First, checkout the youtube-dl GitHub repo [here](https://github.com/ytdl-org/youtube-dl)
+First, take a look at the youtube-dl GitHub repo
+[here](https://github.com/ytdl-org/youtube-dl)
 
 If you're on a Mac or Linux box, the setup is just a matter of downloading a
 build and making it executable:
