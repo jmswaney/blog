@@ -1,7 +1,7 @@
-# Downloading video and audio from YouTube
+# Downloading audio, video, and thumbnails from YouTube
 
 ![YouTube](./youtube.jpg)
-Photo by *NordWood Themes* on Unsplash.
+> Photo by *NordWood Themes* on Unsplash.
 
 **Disclaimer:** This article does **not** condone any illegitimate use of
 `youtube-dl` to access copyrighted works. The author takes no responsibility for
