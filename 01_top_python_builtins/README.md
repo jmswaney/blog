@@ -176,7 +176,7 @@ Here, we get a list of 384 tuples (16 rows * 24 columns) that cycle like an odom
 
 The `functools` module contains functions that act on other functions. You can find lots of great functional programming utilities here.
 
-### 8) functools.partial
+### #8 - **functools.partial**
 
 The `functools.partial` function allows us to *Curry* a function, which means to specify certain arguments as fixed values ahead of time. Currying a function returns a new function that takes fewer arguments.
 
@@ -221,7 +221,7 @@ with open('data.json', 'r') as fd:
 print(data_json)  # => {'name': 'Bia', ...}
 ```
 
-This is particularly useful when dealing with data from the web, doing your our scraping, or working with other languages that work well with JSON.
+This is particularly useful when dealing with data from the web, doing your own scraping, or working with other languages that work well with JSON.
 
 ### #10 - **pickle**
 
