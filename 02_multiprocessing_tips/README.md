@@ -1,4 +1,4 @@
-# Speeding up computations in Python with multiprocessing
+# Speeding up scientific computing with multiprocessing in Python
 
 ![CPU](./cpu.jpg)
 *Photo by Christian Wiediger on Unsplash*
@@ -86,7 +86,7 @@ Now we're getting somewhere! The `detect_nuclei` function takes in an `img` arra
 
 > Note: We will use this `detect_nuclei` function in all subsequent experiments.
 
-## Method 1 - List comprehension from disk
+## Method 1 - List comprehension with IO
 
 Now that we have a function to detect nuclei coordinates, let's apply this function to all of our DAPI images using a simple list comprehension.
 
@@ -100,9 +100,9 @@ meth1_times = %timeit -n 4 -r 1 -o centers = process_images1(tqdm(paths))
 # => 18 s ± 0 ns per loop (mean ± std. dev. of 1 run, 4 loops each)
 ```
 
-In `process_images1`, we take in a list of image paths and use a list comprehension to load each image and detect nuclei. Using the `%timeit` magic command in Jupyter, we can see that the average execution time of ~18 seconds with this approach. 
+In `process_images1`, we take in a list of image paths and use a list comprehension to load each image and detect nuclei. Using the `%timeit` magic command in Jupyter, we can see that this approach has an average execution time of ~18 seconds. 
 
-## Method 2 - multiprocessing.Pool
+## Method 2 - multiprocessing.Pool with IO
 
 Let's see if we can speed things up with a processing `Pool`. To do this, we need to define a function to wrap `detect_nuclei` and `io.imread` together so that we can `map` that function over the list of image paths.
 
@@ -153,7 +153,7 @@ meth4_times = %timeit -n 4 -r 1 -o centers = process_images4(images)
 # => 6.23 s ± 0 ns per loop (mean ± std. dev. of 1 run, 4 loops each)
 ```
 
-Wait, wait? Why is this *slower* than also reading the images from disk with `multiprocessing`? If you read the documentation for the `multiprocessing` module closely, you will learn that data passed to workers of a `Pool` must be serialized via `pickle`. This serialization step creates some computational overhead. That means for Method 2, we were pickling path strings, but in this case, we were pickling entire images.
+Wait, what? Why is this *slower* than also reading the images from disk with `multiprocessing`? If you read the documentation for the `multiprocessing` module closely, you will learn that data passed to workers of a `Pool` must be serialized via `pickle`. This serialization step creates some computational overhead. That means for Method 2, we were pickling path strings, but in this case, we were pickling entire images.
 
 ## Method 5 - multiprocessing.Pool with serialization fix
 
@@ -188,6 +188,13 @@ To show off more of our results, let's show a random sample of 16 DAPI images so
 
 It appears that our simple nuclei detection strategy was effective and has allowed us to organize the DAPI images according to the observed cell density in each field of view.
 
+## Conclusion
+
+![ludicrous_speed](./ludicrous_speed.gif)
+*From Spaceballs the movie*
+
+I really hope this article was helpful, so please let me know if you enjoyed it. The `multiprocessing` techniques presented here have helped me achieve ridiculous speed when processing images for our [SCOUT paper](https://www.nature.com/articles/s41598-020-78130-7). Perhaps in a future we can revisit this example but with GPU acceleration to finally achieve *ludicrous speed*.
+
 ## Bonus: Using progress bars with multiprocessing.Pool
 
 In the above `multiprocessing` examples, we do not have a nice `tqdm` progress bar. We can get one if we use `pool.imap` instead, which is useful for long-running computations.
@@ -206,3 +213,7 @@ centers = process_images_progress(paths)
 ## References
 
 We used image set [BBBC021v1](https://bbbc.broadinstitute.org/bbbc/BBBC021) [[Caie et al., Molecular Cancer Therapeutics, 2010](http://dx.doi.org/10.1158/1535-7163.MCT-09-1148)], available from the Broad Bioimage Benchmark Collection [[Ljosa et al., Nature Methods, 2012](http://dx.doi.org/10.1038/nmeth.2083)].
+
+## Source Availability
+
+All source materials for this article are available [here](https://github.com/jmswaney/blog/tree/main/02_multiprocessing_tips) on my blog GitHub repo.
