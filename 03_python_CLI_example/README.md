@@ -1,6 +1,6 @@
 # Creating beautiful command-line interfaces in Python
 
-In this tutorial, we will create a Python package called `starfox` with a command-line interface (CLI). We will create the CLI using the `click` package and add a wizard using `questionary` for conveniently running CLI commands.
+In this tutorial, we will create a Python package called `starfox` with a command-line interface (CLI) that simulates conversations between players from *Star Fox 64*. We will create the CLI using the `click` package and add a wizard using `questionary` for conveniently choosing which characters to include in our simulated conversation.
 
 After completing this tutorial, you will learn how to:
 
@@ -35,13 +35,13 @@ setup(
 )
 ```
 
-Some things to note about this massive `setup` function call:
+Some things to note about this `setup` function call:
 
 - The `find_packages` function will auto-discover our package
 - The `install_requires` argument specifies *minimum* dependencies to run
 - The `entry_points` argument allows us to name our CLI `starfox` and bind it to a function called `main` within the `starfox/main.py` module (which we still need to write)
 
-Next, make a folder called "*starfox/*" next to our `setup.py` file. This folder will hold all of the source code for our new package, including the CLI. Inside the starfox folder, create an empty file called `__init__.py`. The existence of this file and will cause Python to consider our starfox folder as a package. 
+Make a folder called "*starfox/*" next to our `setup.py` file. This folder will hold all of the source code for our new package. Inside the starfox folder, create an empty file called `__init__.py`. The existence of this file will cause Python to consider our starfox folder as a package. 
 
 > This may seem dubious with our simple example, but an `__init__.py` file allows us to namespace our package modules and execute common initialization code when imported.
 
@@ -78,7 +78,7 @@ $ conda activate starfox
 
 Finally, we can test if our `starfox` console script works.
 
-```bash
+```
 $ starfox
 Do a barrel roll!
 ```
@@ -209,7 +209,7 @@ SLIPPY - "This baby can take temperatures up to 9000 degrees!"
 
 ## Creating a command-line wizard
 
-Now that we can print random quotes, let's simulate a conversation between Star Fox 64 that the user selects. Ideally, we would re-use the `starfox` CLI for this converation feature and still support the previous random quote feature. Fortunately we can do this with `@click.option`, which will make our `character` input an optional named argument. This is convenient because we can alter the behavior of the `starfox` CLI based on whether or not the `character` option is provided (and not `None`).
+Now that we can print random quotes, let's simulate a conversation between Star Fox 64 characters that the user selects. Ideally, we would re-use the `starfox` CLI code for this conversation feature and still support the previous random quote feature. Fortunately we can do this with `@click.option`, which will make our `character` input an optional named argument. This is convenient because we can alter the behavior of the `starfox` CLI based on whether or not the `character` option is provided (not `None`).
 
 For our simulated conversation, we can prompt the user for which characters to include and how many quotes from each to sample. With that in mind, it would be convenient to re-use the random sampling logic we have already written for this as well as the above mentioned case when `character` is provided. Putting this all together, our `main.py` file would look like this.
 
@@ -247,14 +247,14 @@ Notice that we have factored out the random quote logic to a function called `qu
 
 Let's check that we didn't break anything from before.
 
-```bash
+```
 $ starfox -c general
 GENERAL - "It's about time you showed up, Fox. You're the only hope for our world!"
 ```
 
 Looks good. Now let's try our new wizard.
 
-```bash
+```
 $ starfox
 
 ? Select characters (Use arrow keys to move, <space> to select, <a> to toggle, <i> to invert)
