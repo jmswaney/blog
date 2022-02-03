@@ -41,7 +41,7 @@ Some things to note about this `setup` function call:
 - The `install_requires` argument specifies *minimum* dependencies to run
 - The `entry_points` argument allows us to name our CLI `starfox` and bind it to a function called `main` within the `starfox/main.py` module (which we still need to write)
 
-Make a folder called "*starfox/*" next to our `setup.py` file. This folder will hold all of the source code for our new package. Inside the starfox folder, create an empty file called `__init__.py`. The existence of this file will cause Python to consider our starfox folder as a package. 
+Make a folder called "*starfox/*" next to our `setup.py` file. This folder will hold all of the source code for our new package. Inside the starfox folder, create an empty file called `__init__.py`. The existence of this file will cause Python to consider our starfox folder as a package.
 
 > This may seem dubious with our simple example, but an `__init__.py` file allows us to namespace our package modules and execute common initialization code when imported.
 
@@ -78,7 +78,7 @@ $ conda activate starfox
 
 Finally, we can test if our `starfox` console script works.
 
-```
+```text
 $ starfox
 Do a barrel roll!
 ```
@@ -175,7 +175,7 @@ def main(character):
 
 If we try running `starfox` in the terminal, we will get an error because the `character` argument is a required positional argument (named arguments have dashes in front of them). If we also indicate a character in the terminal, we'll see all quotes for that character:
 
-```
+```text
 $ starfox falco
 Quote #1: Enemy group behind us!
 Quote #2: AaawwwwWW man, I'm gonna have ta BACK OFF
@@ -200,7 +200,7 @@ def main(character):
 
 Now we'll get random quotes from the given character.
 
-```
+```text
 $ starfox slippy
 SLIPPY - "Don't worry, Slippy's here!"
 $ starfox slippy
@@ -247,14 +247,14 @@ Notice that we have factored out the random quote logic to a function called `qu
 
 Let's check that we didn't break anything from before.
 
-```
+```text
 $ starfox -c general
 GENERAL - "It's about time you showed up, Fox. You're the only hope for our world!"
 ```
 
 Looks good. Now let's try our new wizard.
 
-```
+```text
 $ starfox
 
 ? Select characters (Use arrow keys to move, <space> to select, <a> to toggle, <i> to invert)
