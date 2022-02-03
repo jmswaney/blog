@@ -1,0 +1,20 @@
+[tool.poetry]
+name = "math-demo"
+version = "0.1.0"
+description = ""
+authors = ["Justin Swaney <jswaney@mit.edu>"]
+
+[tool.poetry.dependencies]
+python = "^3.8"
+plotly = "^5.5.0"
+numpy = "^1.22.1"
+pandas = "^1.4.0"
+
+[tool.poetry.dev-dependencies]
+pytest = "^5.2"
+pylint = "^2.12.2"
+black = "^22.1.0"
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
