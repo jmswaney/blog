@@ -1,6 +1,4 @@
 import numpy as np
-import pandas as pd
-from itertools import cycle
 
 
 def caternary(x, a=1):
@@ -12,7 +10,9 @@ def caternary_approx(x, a=1):
 
 
 def main():
+    from itertools import cycle
     import plotly.express as px
+    import pandas as pd
 
     x = np.linspace(-2, 2)
     a = [1, 1.4, 1.8]
