@@ -34,7 +34,7 @@ def main():
         line_group="line",
         color="a",
         line_dash="form",
-        title="Caternary Demo",
+        title="Catenary Demo",
     )
     fig.update_yaxes(range=[0.5, 4])
     fig.show()

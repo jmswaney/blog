@@ -43,7 +43,7 @@ poetry new math-demo
 cd math-demo
 ```
 
-This will build out the basic structure of a Python package in poetry's standard format in the `math-demo` folder. We should find a subfolder named `math_demo` which, similar to other Python packages, is where our source code will go. There should also be a `tests` folder for unit tests and a curious new `pyproject.toml` file at the top-level. Brett Cannon wrote a great post about how using the newer `pyproject.toml` file can work together with `setuptools` [here](https://snarky.ca/what-the-heck-is-pyproject-toml/) if you are working with both.
+This will build out the basic structure of a Python package in poetry's standard format in the `math-demo` folder. We should find a subfolder named `math_demo` which, similar to other Python packages, is where our source code will go. There should also be a `tests` folder for unit tests and a curious new `pyproject.toml` file at the top-level.
 
 Historically, Python packages would have a `setup.py` file and optionally a `requirements.txt` file which can be used to install the Python package locally. Instead of writing the code to install the Python package, our `pyproject.toml` file is just a file with data in it that declares information about the Python package in a standard way.
 
@@ -105,10 +105,10 @@ Think of a power line hanging between two telephone poles. What shape does the h
 The formula for a catenary curve centered at `x = 0` is given by:
 
 $$
-\begin{align}
 f(x) = a \cosh(\frac{x}{a})
-\end{align}
 $$
+
+![exact](imgs/f_formula.png)
 
 where `a` is a constant.
 
@@ -122,9 +122,11 @@ $$
 \end{align}
 $$
 
+![approx](imgs/g_formula.png)
+
 Aren't you excited to plot these equations?! Or are the power lines looking pretty good right now?
 
-## Implementing the exact and approximate catenary calaculations
+## Implementing the exact and approximate catenary calculations
 
 Next, we are going to add code to calculate $f(x)$ and $g(x)$ to our `math-demo` package.
 
@@ -140,7 +142,7 @@ def catenary(x):
     return x
 ```
 
-Great, now let's change out test suite to use this:
+Great, now let's change our test suite to use this:
 
 ```python
 # in test_math_demo.py
@@ -230,7 +232,7 @@ def main():
         line_group="line",
         color="a",
         line_dash="form",
-        title="Caternary Demo",
+        title="Catenary Demo",
     )
     fig.update_yaxes(range=[0.5, 4])
     fig.show()
