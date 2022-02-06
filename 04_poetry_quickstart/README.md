@@ -257,6 +257,6 @@ In this tutorial, we learned how to `install` and use the `poetry` package manag
 
 We also did a little bit of math about catenary curves! If you want to see the details of how the exact catenary formula can be derived, [here](http://galileoandeinstein.phys.virginia.edu/7010/CM_02_CalculusVariations.html) is a post from the University of Virginia.
 
-## Source Availability
+## Source availability
 
 All source materials for this article are available [here](https://github.com/jmswaney/blog/tree/main/04_poetry_quickstart) on my blog GitHub repo.
