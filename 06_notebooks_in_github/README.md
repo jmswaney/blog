@@ -106,7 +106,7 @@ generally a better experience while viewing diffs on GitHub too.
 
 ## Final thoughts
 
-Jupyter notebooks and `git` are powerful tools for machine learning engineers and data scientists to prototype solutions and collaborate on a shared codebase, respectively. We discussed some tips and tricks for getting the best of both worlds from notebooks and version control in our simple financial example. 
+Jupyter notebooks and `git` are powerful tools for machine learning engineers and data scientists to prototype solutions and collaborate on a shared codebase, respectively. We discussed some tips and tricks for getting the best of both worlds from notebooks and version control in our simple financial example.
 
 ## Source availability
 
