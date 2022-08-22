@@ -1,113 +1,209 @@
+![](https://unsplash.com/photos/H3oXiq7_bII/download?ixid=MnwxMjA3fDB8MXxhbGx8fHx8fHx8fHwxNjYxMTc2MTky&force=true&w=1920)
+
+Photo by <a href="https://unsplash.com/@snowscat?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText">Snowscat</a> on <a href="https://unsplash.com/s/photos/patagonia?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText">Unsplash</a>
+  
+
 # Tips for using Jupyter Notebooks with GitHub
 
-Start with some motivation. Jupyter notebooks are awesome, GitHub is awesome, wouldn't it be great if using them together didn't suck?
+To machine learning engineers and data scientists, Jupyter notebooks have become
+a workhorse tool in the toolbox. Notebooks allow researchers to quickly
+prototype new solutions and make interactive visualizations in a remote
+computing environment. Unfortunately, the ease-of-use and interactivity of
+notebooks comes with some trade-offs when using version control.
 
-To machine learning engineers and data scientists, Jupyter notebooks have become a workhorse tool in the toolbox. Notebooks allow researchers to quickly prototype new solutions and make interactive visualizations in a remote computing environment. Unfortunately, the ease-of-use and interactivity of notebooks comes with some trade-offs when using version control.
+Version control tools like `git` are powerful collaboration tools that track
+changes to source code and synchronize local and remote copies of a shared
+codebase. They allow developers to work together on the same codebase and
+seamlessly merge their improvements together. These tools also work out of the
+box with services like [GitHub](https://github.com/), which provide hosting for
+the shared codebase. Unfortunately, most of the user experience of using `git`
+and GitHub has been designed around text-based source code, but Jupyter
+notebooks are saved with embedded output media in a JSON format within `.ipynb`
+files.
 
-Version control tools like `git` are powerful collaboration tools that track changes to source code and synchronize local and remote copies of a shared codebase. They allow developers to work together on the same codebase and seamlessly merge their improvements together. These tools also work out of the box with services like GitHub, which provide hosting for the shared source codebase. Unfortunately, most of the user experience of using `git` and GitHub has been designed around text-based source code, and Jupyter notebooks are saved with embedded output media in a JSON format within our familiar `.ipynb` files.
-
-This guide shares some tips and tricks for working with Jupyter notebooks under version control. If you work with notebooks and are on a team of machine learning engineers or data scientists, then you may find this guide particularly useful. As an example, we will make notebooks that compute 50 and 200-day moving averages (MA) of any stock ticker available on Yahoo Finance.
+As an example, let's imagine that we are quants at a new hedge fund called
+"Patagonia Capital". We decide it would be a good idea to create a repository to
+hold all of our exploratory data analysis (EDA) which will include shared
+Jupyter notebooks.
 
 After completing this guide, you will learn how to:
 
-- Setup auto-formatting in notebooks
+- Setup auto-formatting in Jupyter notebooks
 - Use VSCode's built-in tools for viewing notebook diffs
-- Use `nbstripout` with `git` to commit only notebook source
-- Use papermill to create a shared notebook library
-- Refactor shared notebook code into Python modules
+- Use `nbstripout` with `git` to only commit changes to notebook source
+- Use papermill to create a shared library of executable notebooks
 - And fetch some stock market data in Python!
 
-## The `patagonia` Python project
+After creating the ["patagonia" Github repository](https://github.com/jmswaney/patagonia)
+for all the quants at Patagonia Capital, our next task is to setup the
+`patagonia` environment.
 
-Let's imagine we want to make a notebook that fetches the previous 5 years of closing prices for a given stock ticker, computes the 50-MA and 200-MA, and visualizes all three time series in a single plot.
+## Tip #1: Auto-formatting in Jupyter notebooks
 
-- Setup virtual environment with all dependencies
+In our newly created repository, we can create the `patagonia` conda virtual
+environment. It's helpful to setup code formatting to provide some reasonable
+formatting standards across our company.
 
 ```zsh
-conda create -y -n python-linting python=3.8 
-conda activate python-linting
+conda create -y -n patagonia python=3.8 
+conda activate patagonia
 conda install -y -c conda-forge pylint black jupyterlab jupyterlab_code_formatter
 ```
 
-Then start a Jupyter server.
+We can start `jupyter lab` to check that the code formatting is working. When
+you create a new notebook, you should see a `Format notebook` option in the
+notebook's toolbar. 
+
+Since it's somewhat inconvenient to have to click the toolbar to perform code
+formatting, we can configure our formatter to format on save. Open up the
+`Advanced Settings Editor` via the Settings dropdown (or by pressing `Cmd-,` on
+Mac). Here, you will see the "Jupyterlab Code Formatter" settings for
+customization. At the bottom of these options, you can turn on the `Auto format
+config` checkbox.
+
+![autoformat-setting](./autoformat-setting.png)
+
+> Note: if you are using an older version of Jupyter, you may not see a checkbox
+> for this setting. In this case, you can add the following under "User
+> Preferences":
+>
+> ```json
+> {
+>   "formatOnSave": true
+> }
+> ```
+
+When you return to your notebook, you should see that simply saving the notebook
+automatically formats your code. This will help make our changes easier to read
+within version control because our code will be committed with consistent
+formatting that is also designed to make diffs as small as they can be.
+
+## Tip #2: VSCode notebook diffs
+
+Now that we have our auto-formatting setup, let's plot the closing price of NVDA
+stock over the last 5 years. We'll first need to install some new dependencies.
 
 ```zsh
-jupyter lab
+conda install -y -c conda-forge pandas yfinance seaborn
 ```
 
-This will open up Jupyter in your browser.
+Next, we can use Yahoo Finance along with Seaborn to make our plot of the NVDA
+ticker history in a Jupyter notebook:
 
-Create a new notebook and you will see a `Format notebook` option.
+```python
+# in plot_history.ipynb
+import seaborn as sns
+import yfinance as yf
+from matplotlib import pyplot as plt
 
-### Tip #1: Auto-formatting in Jupyter Notebooks
+sns.set_theme("paper")
 
-Before we even use version control, it's helpful to setup auto-formatting to give us some reasonable formatting standards across our notebooks. This will help make our changes easier to read within version control because our code will be committed with consistent formatting that is also designed to make diffs as small as they can be.
+ticker = yf.Ticker("NVDA")
+hist = ticker.history(period="5y")
 
-Open up the `Advanced Settings Editor` via the Settings dropdown or by pressing `Cmd-,` on Mac.
-
-Here you will see the Jupyterlab Code Formatter settings for customization. We also have a section to add keyboard shortcuts. Let's add a shortcut for formatting the entire notebook.
-
-```json
-# Keyboard Shortcuts > User Preferences
-{
-  "shortcuts": [
-    {
-      "command": "jupyterlab_code_formatter:format_all",
-      "keys": [
-        "Ctrl K",
-        "Ctrl M"
-      ],
-      "selector": ".jp-Notebook.jp-mod-editMode"
-    }
-  ]
-}
-
+plt.figure()
+sns.lineplot(x="Date", y="Close", data=hist)
+plt.savefig("NVDA_close_5y.png")
+plt.show()
 ```
 
-After saving and returning to your notebook, you should see this shortcut works for formatting the entire Jupyter notebook.
+![NVDA-close-5yr](./NVDA_Close_5y.png)
 
-Return to Advanced Settings Editor, go to Jupyterlab Code Formatter. Under User Preferences, add the following:
+This will save the plot as a PNG image embedded in the notebook as well as in a new file called `NVDA_close_5y.png`. Since we're just getting started, let's imagine we directly commit this notebook and push it into the `patagonia` repository.
 
-```json
-{
-  "formatOnSave": true
-}
+When we try to change something simple in our notebook like the ticker symbol from NVDA to
+AAPL, this is the diff we get in GitHub.
+
+![github-diff](./github-diff.png)
+
+On the top, you can see the plot image changed (presumably both base-64
+encoded). On the bottom, you can see the only change to the code, but it is
+inconveniently embedded in a string with escape characters.
+
+If you were to look at the diff in VSCode, however, you would be pleasantly
+surprised to see this:
+
+![vscode-diff](./vscode-diff2.png)
+
+In VSCode, comparing different versions of Jupyter notebooks will show more
+informative diffs with your source code as well as changes in the rendered
+output.
+
+## Tip #3: nbstripout as git filter
+
+Using auto-formatting and VSCode notebook diffs are really helping the devs at
+Patagonia Capital work togther, but sometimes we'd like to be a little more
+strict about what gets committed to our repository. 
+
+At Patagonia Capital, we've had some issues with new developers pushing massive
+notebooks to GitHub. To solve this type of problem, we can use `nbstripout` to
+automatically remove all notebook outputs before committing to our repository.
+To setup `nbstripout`, we need to do the following within our `patagonia`
+repository:
+
+```zsh
+conda install -y -c conda-forge nbstripout
+nbstripout --install --attributes .gitattributes
 ```
 
-After saving and return to your notebook, you should see that simply saving the notebook automatically formats your code.
+This will add a `.gitattributes` file (similar to a `.gitignore` file) which
+will tell git to apply the `nbstripout` filter to all `.ipynb` files. When this
+filter is applied to our notebooks, GitHub will no longer have the output plots. 
 
-### Tip #2: Built-in VSCode tools
+If you'd like to automatically remove empty / tagged cells or retroactively
+apply this filter to your git history, you can read the `nbstripout`
+[documentation](https://github.com/kynan/nbstripout) on GitHub.
 
-First of all, mention that VSCode has great tools for looking at notebook diffs.
+## Tip #4: Executable notebooks with Papermill
 
-- Running notebooks inside VSCode
-- Viewing notebook diffs in VSCode
+While `nbstripout` has really helped Patagonia Capital avoid a bloated
+repository, we still sometimes would like to generate reports with standard
+visualizations from our growing library of notebooks.
 
-### Tip #3: nbstripout
+[Papermill](https://github.com/nteract/papermill) allows running a Jupyter
+notebook as if it were an executable script. By designating certain cells as
+"parameters", papermill provides a command-line interface (CLI) to execute your
+notebooks and to specify parameter values via command-line arguments.
 
-Allows local copies, only commit the code. Refer to autoformatting post.
-Combined with the autoformatting, you are left with readable diffs even though
-your source code is embedded inside a JSON object. Show before and after diff.
+Let's install `papermill` and create an `output/` folder for our "rendered" notebooks.
 
-- Setup the git plugin
-- Show before and after diff with a simple example
+```zsh
+conda install -y -c conda-forge papermill
+mkdir output
+```
 
-### Tip #4: Papermill input / output folders with gitignore
+To avoid committing redundant rendered notebooks, we can add `output/` to our
+`.gitignore`.
 
-Papermill is a cool way to execute notebooks.
+In Jupyterlab, we can bring our `symbol`, `stat`, and `period` constants to a separate cell. With that new cell active, we can open the Property Inspector and add a tag called "parameters":
 
-Gives consistent code formatting across the team of developers. Show before and
-after.
+![parameters-papermill](./parameters-papermill.png)
 
-### Tip #5: A shared library for all notebooks
+The values in this tagged cell will be default values to the notebook. We can execute our notebook to create a rendered notebook for the last 10 years of AAPL using the `papermill` CLI:
 
-It's often useful to factor out code to be re-used across notebooks. This is
-generally a better experience while viewing diffs on GitHub too.
+```zsh
+papermill plot_history.ipynb \
+    output/plot_history_rendered.ipynb \
+    -p symbol AAPL \
+    -p period 10y
+```
+
+Papermill can also target cloud storage outputs for hosting rendered notebooks,
+execute notebooks from custom Python code, and even be used within distributed
+data pipelines like [Dagster](https://dagster.io/) (see
+[Dagstermill](https://docs.dagster.io/integrations/dagstermill)). For more
+information, see the papermill [documentation](https://github.com/nteract/papermill).
 
 ## Final thoughts
 
-Jupyter notebooks and `git` are powerful tools for machine learning engineers and data scientists to prototype solutions and collaborate on a shared codebase, respectively. We discussed some tips and tricks for getting the best of both worlds from notebooks and version control in our simple financial example.
+Jupyter notebooks and `git` are powerful tools for machine learning engineers
+and data scientists to prototype solutions and collaborate on a shared codebase.
+We discussed some tips and tricks for getting the best of both worlds from
+notebooks and version control in our simple financial example from Patagonia
+Capital.
 
 ## Source availability
 
-All source materials for this article are available [here](https://github.com/jmswaney/blog/tree/main/06_notebooks_in_github) on my blog GitHub repo.
+All source materials for this article are available
+[here](https://github.com/jmswaney/blog/tree/main/06_notebooks_in_github) on my
+blog GitHub repo.
