@@ -1,0 +1,11 @@
+name: embedding
+
+channels:
+  - default
+  - conda-forge
+
+dependencies:
+  - poetry=1.*
+  - python
+  - cudatoolkit
+  - cudnn
